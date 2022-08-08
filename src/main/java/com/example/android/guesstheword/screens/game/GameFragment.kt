@@ -57,24 +57,22 @@ import com.example.android.guesstheword.databinding.GameFragmentBinding
             viewModel.onSkip()
         }
         /** Setting up LiveData observation relationship **/
-        viewModel.word.observe(viewLifecycleOwner, Observer { newWord ->
+        viewModel.word.observe(this, Observer { newWord ->
             binding.wordText.text = newWord
         })
 
         viewModel.score.observe(this, Observer { newScore ->
             binding.scoreText.text = newScore.toString()
         })
-
+        // Sets up event listening to navigate the player when the game is finished
+        viewModel.eventGameFinish.observe(viewLifecycleOwner, Observer { isFinished ->
+            if (isFinished) {
+                val currentScore = viewModel.score.value ?: 0
+                val action = GameFragmentDirections.actionGameToScore(currentScore)
+                findNavController(this).navigate(action)
+                viewModel.onGameFinishComplete()
+            }
+        })
         return binding.root
 
-    }
-
-
-    /**
-     * Called when the game is finished
-     */
-    private fun gameFinished() {
-        val currentScore = viewModel.score.value ?:0
-        val action = GameFragmentDirections.actionGameToScore(score)
-        findNavController(this).navigate(action)
     }
