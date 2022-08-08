@@ -52,16 +52,19 @@ import com.example.android.guesstheword.databinding.GameFragmentBinding
 
         binding.correctButton.setOnClickListener {
            viewModel.onCorrect()
-           updateWordText()
-           updateScoreText()
         }
         binding.skipButton.setOnClickListener {
             viewModel.onSkip()
-            updateWordText()
-            updateScoreText()
         }
-        updateScoreText()
-        updateWordText()
+        /** Setting up LiveData observation relationship **/
+        viewModel.word.observe(viewLifecycleOwner, Observer { newWord ->
+            binding.wordText.text = newWord
+        })
+
+        viewModel.score.observe(this, Observer { newScore ->
+            binding.scoreText.text = newScore.toString()
+        })
+
         return binding.root
 
     }
@@ -71,19 +74,7 @@ import com.example.android.guesstheword.databinding.GameFragmentBinding
      * Called when the game is finished
      */
     private fun gameFinished() {
+        val currentScore = viewModel.score.value ?:0
         val action = GameFragmentDirections.actionGameToScore(score)
         findNavController(this).navigate(action)
     }
-
-
-    /** Methods for updating the UI **/
-
-    private fun updateWordText() {
-        binding.wordText.text =viewModel.word
-
-    }
-
-    private fun updateScoreText() {
-        binding.scoreText.text = viewModel.score.toString()
-    }
-}

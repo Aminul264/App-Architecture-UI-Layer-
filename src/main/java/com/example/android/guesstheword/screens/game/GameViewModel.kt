@@ -1,21 +1,25 @@
 package com.example.android.guesstheword.screens.game
 
-import  android.lyfecycle.ViewModel
+import  android.lyfecycle.MutableLiveData
+import android.lifecycle.ViewModel
+
+
 class GameViewModel : ViewModel(){
 
     // The current word
-    private var word = ""
+    val  word =MutableLiveData<String>()
+
 
     // The current score
-    private var score = 0
+    val score = MutableLiveData<Int>()
 
     // The list of words - the front of the list is the next word to guess
     private lateinit var wordList: MutableList<String>
 
     init {
-        log.i(tag: "GameViewModel",msg:"GameViewModel created!")
         resetList()
         nextWord()
+        score.value=0
 
     }
     /**
@@ -63,12 +67,12 @@ class GameViewModel : ViewModel(){
     /** Methods for buttons presses **/
 
     fun onSkip() {
-        score--
+        score.value = (score.value)?.minus(1)
         nextWord()
     }
 
   fun onCorrect() {
-        score++
+        score.value =(score.value)?plus(1)
         nextWord()
     }
 }
